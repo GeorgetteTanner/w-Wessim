@@ -38,9 +38,9 @@ def main(argv):
 
 	group3 = parser.add_argument_group('Parameters for sequencing')
 	group3.add_argument('-p', action='store_true', help='generate paired-end reads [single]')
-	group3.add_argument('-n', metavar = 'INT', type=int, dest='readnumber', required=True, help='total (n)umber of reads')
+	group3.add_argument('-n', metavar = 'INT', type=int, dest='readnumber', required=True, help='total (n)umber of reads\read pairs')
 	group3.add_argument('-l', metavar = 'INTord', dest='readlength', required=True, help='read (l)ength (bp)') #GT
-        #group3.add_argument('-l', metavar = 'INT', type=int, dest='readlength', required=True, help='read (l)ength (bp)') #GT
+     #group3.add_argument('-l', metavar = 'INT', type=int, dest='readlength', required=True, help='read (l)ength (bp)') #GT
 	group3.add_argument('-M', metavar = 'FILE', dest='model', required=True, help='GemSim (M)odel file (.gzip)')
 	group3.add_argument('-t', metavar = 'INT', type=int, dest='threadnumber', required=False, help='number of (t)hreaded subprocesses [1]', default=1)
 
@@ -48,7 +48,7 @@ def main(argv):
 	group4.add_argument('-o', metavar = 'FILE', dest='outfile', help='(o)utput file header. ".fastq.gz" or ".fastq" will be attached automatically. Output will be splitted into two files in paired-end mode', required=True)
 	group4.add_argument('-z', action='store_true', help='compress output with g(z)ip [false]')
 	group4.add_argument('-q', metavar = 'INT', type=int, dest='qualbase', required=False, help='(q)uality score offset [33]', default=33)
-	group4.add_argument('-v', action='store_true', help='(v)erbose; print out intermediate messages.')
+	#group4.add_argument('-v', action='store_true', help='(v)erbose; print out intermediate messages.') #GT - unused
 
 	args = parser.parse_args()
 	reffile = args.reference
@@ -58,7 +58,7 @@ def main(argv):
 	isize = args.fragsize
 	isd = args.fragsd
 	imin = args.fragmin
-	bind = args.bind
+	bind = args.bind #GT - unused
 
 	paired = args.p
 	readlength = args.readlength
@@ -77,7 +77,7 @@ def main(argv):
 	outfile = args.outfile
 	compress = args.z
 	qualbase = args.qualbase
-	verbose = args.v
+	#verbose = args.v #GT - unused
 
 	print
 	print "-------------------------------------------"

@@ -44,7 +44,7 @@ def main(argv):
 	group4.add_argument('-o', metavar = 'FILE', dest='outfile', help='(o)utput file header. ".fastq.gz" or ".fastq" will be attached automatically. Output will be splitted into two files in paired-end mode', required=True)
 	group4.add_argument('-z', action='store_true', help='compress output with g(z)ip [false]')
 	group4.add_argument('-q', metavar = 'INT', type=int, dest='qualbase', required=False, help='(q)uality score offset [33]', default=33)
-	group4.add_argument('-v', action='store_true', help='(v)erbose; print out intermediate messages.')
+	#group4.add_argument('-v', action='store_true', help='(v)erbose; print out intermediate messages.')#GT - unused
 
 	args = parser.parse_args()
 	reffile = args.reference
@@ -79,7 +79,7 @@ def main(argv):
 	outfile = args.outfile + "-" + str(subid)
 	compress = args.z
 	qualbase = args.qualbase
-	verbose = args.v
+	#verbose = args.v #GT - unused
 
 	matchdic = {}
 	countdic = {}
