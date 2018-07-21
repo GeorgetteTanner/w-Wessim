@@ -35,7 +35,7 @@ w-Wessim requires the following inputs:
 
 * **Genome sequence:**
 This is the genome that you intend to sequence.
-FASTA format.
+FASTA format. Must be indexed with faidx.
 
 * **Probe sequences:**
 These are the "probes" used in the BLAT alignment to define regions for w-Wessim to sequence. These can either be the sequences for exon capture kit hybridisation probes, or the sequences of real WES reads (recommended for more realistic read distributions from w-Wessim). 

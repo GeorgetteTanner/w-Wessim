@@ -174,7 +174,7 @@ def main(argv):
 	matchkeys = matchdic.keys()
 
 	matchweights={} #GT
-    for seq	in matchdic: #GT
+	for seq in matchdic: #GT
 		if type(matchdic[seq][0])==int: #GT
 			n=1 #GT
 		else: #GT
