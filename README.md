@@ -3,7 +3,7 @@
 # w-Wessim
 ## Introduction
 
-w-Wessim is an adapted version of Wessim (Kim S. et al., 2013), an *in silico* whole exome sequencing tool that combines the whole genome in silico sequencing tool, GemSIM (McElroy K. et al., 2012), with a BLAT alignment of exon capture hybridization probe sequences in order to define target exon regions for sequencing. w-Wessim builds upon Wessim to include modelling of copy number variants by weighting selection of exon capture probes based on the number of times they align to a genome, as well as allowing read lengths to be taken from a distribution to account for read trimming in the error model training data set. 
+w-Wessim is an adapted version of Wessim (Kim S. et al., 2013), an *in silico* whole exome sequencing (WES) tool that combines a method for selecting fragments from target regions with the whole genome in silico sequencing tool, GemSIM (McElroy K. et al., 2012). Target regions are determined through a BLAT alignment of exon capture hybridization probe sequences to the genome to be sequenced. w-Wessim builds upon Wessim to include modelling of copy number variants by weighting selection of exon capture probes based on the number of times they align to a genome, as well as allowing read lengths to be taken from a distribution to account for read trimming in the error model training data set. 
 
 We also provide an improved protocol that more accurately models the read distributions seen in real WES data by using real WES read sequences instead of exon capture probe sequences for the BLAT alignment.
 
