@@ -38,15 +38,13 @@ This is the genome that you intend to sequence.
 FASTA format. Must be indexed with faidx.
 
 * **Probe sequences:**
-These are the "probes" used in the BLAT alignment to define regions for w-Wessim to sequence. These can either be the sequences for exon capture kit hybridisation probes, or the sequences of real WES reads (recommended for more realistic read distributions from w-Wessim). 
-Probe sequences for the Agilent SureSelect Human All Exon V4+UTRs kit and real WES reads (from the NCBI Sequence Read Archive, accession no. SRR2103613) that have been quality and adapter trimmed by cutadapt and filtered for a BWA MEM mapping quality (when aligned to hg38) of 60, are provided with w-Wessim. 
+These are the "probes" used in the BLAT alignment to define regions for w-Wessim to sequence. These can either be the sequences for exon capture kit hybridisation probes, or the sequences of real WES reads (recommended for more realistic read distributions from w-Wessim). Probe sequences for the Agilent SureSelect Human All Exon V4+UTRs kit (downloaded from https://earray.chem.agilent.com/suredesign/index.htm and converted to FASTA format with the Prep\_Probe2Fa.py script from the orginal Wessim tool) are provided at https://github.com/GeorgetteTanner/data as 'S03723424_Probes.txt.fa'. Real WES reads (from the NCBI Sequence Read Archive, accession no. SRR2103613, captured with the Agilent SureSelect Human All Exon V5+UTRs kit) that have been quality and adapter trimmed by cutadapt and filtered for a BWA MEM mapping quality (when aligned to hg38) of 60, are provided at https://github.com/GeorgetteTanner/data as 'real\_wes\_reads\_probes.fa'.
 
 * **BLAT alignment of probe sequences:**
 See the section below on BLAT.
 
 * **GemSIM error model**
-This tells w-Wessim how to incorporate errors in to the reads. Users can generate their own error models using GemSIM or use an existing model. One is provided with w-Wessim that has been trained on Illumina HiSeq 2000 WGS 101bp paired-end reads (from the NCBI Sequence Read Archive, accession no. ERR194146) from chromosome 1, that had been quality and adapter trimmed with cutadapt. Error models are specific to paired- or single-end read datasets and therefore the user must tell w-Wessim to generate paired end reads (with -p) if using a paired-end error model.
-
+This tells w-Wessim how to incorporate errors in to the reads. Users can generate their own error models using GemSIM or use an existing model. One is provided with w-Wessim ('lib/hs2000p.gzip') that has been trained on Illumina HiSeq 2000 WGS 101bp paired-end reads (from the NCBI Sequence Read Archive, accession no. ERR194146) from chromosome 1, that had been quality and adapter trimmed with cutadapt. Error models are specific to paired- or single-end read datasets and therefore the user must tell w-Wessim to generate paired end reads (with -p) if using a paired-end error model.
 
 ## BLAT
 
