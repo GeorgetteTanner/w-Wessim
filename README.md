@@ -134,7 +134,9 @@ python2 w-wessim2.py -R {INPUT_GENOME} -P {PROBES_FILE} -B {BLAT_OUTPUT}.psl -n 
 |-t|Number of threads.|1
 |-q|Quality score offset.|33
 
+
 ##Example
+
 
 This example demonstrates how to use w-Wessim with the real reads probe set to create the most realistic sequencing dataset. This is a very time and memory consuming process and not feasible without access to a high performance computing system. Therefore the option of using a subsampled probe set (with 1/1000th of the probes) is available if the user wishes to run the programs on a standard computer for testing. The resulting sequencing data set from this will look very patchy and is not intended for use. Instructions for both options are included below.
 
@@ -180,7 +182,7 @@ for chr in $(seq 1 22) X Y; do samtools faidx Homo_sapiens_assembly38.fasta ${ch
 #its best to group into as few files as possible.: 
 
 #EITHER:
-fill in hg38
+
 #1. For haploid:
 cat Homo_sapiens_assembly38_chr1*fasta > Homo_sapiens_assembly38_1.fasta
 cat Homo_sapiens_assembly38_chr[^1]*fasta > Homo_sapiens_assembly38_2.fasta
@@ -209,7 +211,7 @@ for clone in clone1 clone2 germline ; do cat noheader_${clone}*.psl | sort -k 10
 #Add the header:
 cat pslheader.txt sorted_combined_noheader_${clone}.psl > ${clone}.psl
 
-#Combine fasta files into full genomes
+#Combine fasta files into full genomes:
 for clone in clone1 clone2 germline ; do cat prefix${clone}*.fasta > prefix${clone}.fasta ; done
 
 #w-Wessim:
