@@ -47,7 +47,7 @@ This is the genome that you intend to sequence.
 FASTA format. Must be indexed with faidx.
 
 * **Probe sequences:**
-These are the "probes" used in the BLAT alignment to define regions for w-Wessim to sequence. These can either be the sequences for exon capture kit hybridisation probes, or the sequences of real WES reads (recommended for more realistic read distributions from w-Wessim). Probe sequences for the Agilent SureSelect Human All Exon V4+UTRs kit can be downloaded from https://earray.chem.agilent.com/suredesign/index.htm and converted to FASTA format with the Prep\_Probe2Fa.py script from the orginal Wessim tool (http://sak042.github.io/Wessim/). Real WES reads (from the NCBI Sequence Read Archive, accession no. SRR2103613, captured with the Agilent SureSelect Human All Exon V5+UTRs kit) that have been quality and adapter trimmed by cutadapt and filtered for a BWA MEM mapping quality (when aligned to hg38) of 60, are provided as sample ERR2752113 from the European Nucleotide Archive (ftp://ftp.sra.ebi.ac.uk/vol1/ERA157/ERA1574375/fastq/real_wes_reads_probes.fastq.gz). These will need to be converted from fastq to fasta format with:
+These are the "probes" used in the BLAT alignment to define regions for w-Wessim to sequence. These can either be the sequences for exon capture kit hybridisation probes, or the sequences of real WES reads (recommended for more realistic read distributions from w-Wessim). Probe sequences for the Agilent SureSelect Human All Exon V4+UTRs kit can be downloaded from https://earray.chem.agilent.com/suredesign/index.htm and converted to FASTA format with the Prep\_Probe2Fa.py script from the orginal Wessim tool (http://sak042.github.io/Wessim/). Real WES reads (from the NCBI Sequence Read Archive, accession no. SRR2103613, captured with the Agilent SureSelect Human All Exon V5+UTRs kit) that have been quality and adapter trimmed by cutadapt and filtered for a high BWA MEM mapping quality, are provided as sample ERR2752113 from the European Nucleotide Archive (ftp://ftp.sra.ebi.ac.uk/vol1/ERA157/ERA1574375/fastq/real\_wes\_reads\_probes.fastq.gz). These will need to be converted from fastq to fasta format with:
 
 ```
 paste - - - - < file.fastq | cut -f 1,2 | sed 's/^@/>/' | tr "\t" "\n" > file.fa
@@ -135,11 +135,13 @@ python2 w-wessim2.py -R {INPUT_GENOME} -P {PROBES_FILE} -B {BLAT_OUTPUT}.psl -n 
 |-q|Quality score offset.|33
 
 
-##Example
+
+## Example
 
 
 This example demonstrates how to use w-Wessim with the real reads probe set to create the most realistic sequencing dataset. This is a very time and memory consuming process and not feasible without access to a high performance computing system. Therefore the option of using a subsampled probe set (with 1/1000th of the probes) is available if the user wishes to run the programs on a standard computer for testing. The resulting sequencing data set from this will look very patchy and is not intended for use. Instructions for both options are included below.
 
+Alternatively, the probe sequences from an exon capture kit can be used. This is much quicker and less memory intensive but results in a less realistic distribution of reads. See the above "Inputs" section for instructions for this.
 
 ```bash
 #Download programs - (you may get a few warnings during pblat installation that can be ignored):
