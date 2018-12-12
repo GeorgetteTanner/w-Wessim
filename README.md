@@ -142,9 +142,9 @@ python2 w-wessim2.py -R {INPUT_GENOME} -P {PROBES_FILE} -B {BLAT_OUTPUT}.psl -n 
 
 
 This example demonstrates how to use w-Wessim with the real reads probe set to create the most realistic sequencing dataset. This is a very time and memory consuming process and not feasible without access to a high performance computing system. The option of using a subsampled probe set (with 1/1000th of the probes) is available if the user wishes to run the programs on a standard computer just for testing the code. The resulting sequencing data set from this will look very patchy and is not intended for use.
-Alternatively, the probe sequences from an exon capture kit can be used. This is much quicker and less memory intensive but results in a slightly less realistic distribution of reads. See the above "Inputs" section for instructions for this.
+Alternatively, the probe sequences from an exon capture kit can be used. This is much quicker and less memory intensive but results in a slightly less realistic distribution of reads. 
 
-Instructions for both options are included below.
+Instructions for all three options are included below.
 
 
 ```bash
