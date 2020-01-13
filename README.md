@@ -35,7 +35,7 @@ The first option requires relatively low computational requirements and can be d
 
 The second option produces more realistic coverage across target and off target regions but requires a high performance computing system due to both time and memory requirements - around 9h/threads and 72GB RAM x threads to generate 1 × 10^7 pairs of reads. The large memory requirement results from the high number of real reads used as probes, which can be downsampled if needed. A BLAT alignment of the probes to the genome being sequenced is necessary prior to running w-Wessim. For the full set of 1x108 real read probes used in our example, this would take ~700h/threads. However, this can be ran across multiple nodes in separate runs by splitting the read number, probes or genome sequence.
 
-##Installation
+## Installation
 ```bash
 git clone https://github.com/GeorgetteTanner/w-Wessim.git
 ```
@@ -49,7 +49,7 @@ This is the genome that you intend to sequence.
 FASTA format. Must be indexed with faidx.
 
 * **Probe sequences:**
-These are the "probes" used in the BLAT alignment to define regions for w-Wessim to sequence. These can either be the sequences for exon capture kit hybridisation probes, or the sequences of real WES reads (recommended for more realistic read distributions from w-Wessim). Probe sequences for the Agilent SureSelect Human All Exon V4+UTRs kit (or any other kit for which probe sequences are avaialable) can be downloaded from https://earray.chem.agilent.com/suredesign/index.htm and converted to FASTA format with the Prep\_Probe2Fa.py script from the orginal Wessim tool (http://sak042.github.io/Wessim/). Real WES reads (from the NCBI Sequence Read Archive, accession no. SRR2103613, captured with the Agilent SureSelect Human All Exon V5+UTRs kit) that have been quality and adapter trimmed by cutadapt and filtered for a high BWA MEM mapping quality, are provided as sample ERR2752113 from the European Nucleotide Archive (ftp://ftp.sra.ebi.ac.uk/vol1/ERA157/ERA1574375/fastq/real\_wes\_reads\_probes.fastq.gz). These will need to be converted from fastq to fasta format with:
+These are the "probes" used in the BLAT alignment to define regions for w-Wessim to sequence. These can either be the sequences for exon capture kit hybridisation probes, or the sequences of real WES reads (recommended for more realistic read distributions from w-Wessim). Probe sequences for the Agilent SureSelect Human All Exon V4+UTRs kit (or any other kit for which probe sequences are avaialable) can be downloaded from https://earray.chem.agilent.com/suredesign/index.htm and converted to FASTA format with the Prep\_Probe2Fa.py script from the orginal Wessim tool (http://sak042.github.io/Wessim/). Real WES reads (from the NCBI Sequence Read Archive, accession no. SRR2103613, captured with the Agilent SureSelect Human All Exon V5+UTRs kit) that have been quality and adapter trimmed by cutadapt and filtered for a high BWA MEM mapping quality, are provided as sample ERR2752113 from the European Nucleotide Archive (http://ftp.sra.ebi.ac.uk/vol1/run/ERR275/ERR2752113/real_wes_reads_probes.fastq.gz). These will need to be converted from fastq to fasta format with:
 
 ```
 paste - - - - < file.fastq | cut -f 1,2 | sed 's/^@/>/' | tr "\t" "\n" > file.fa
