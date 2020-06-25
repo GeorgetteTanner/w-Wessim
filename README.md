@@ -7,8 +7,13 @@ w-Wessim is an adapted version of Wessim (Kim S. et al., 2013), an *in silico* w
 
 We also provide an improved protocol that more accurately models the read distributions seen in real WES data by using real WES read sequences instead of exon capture probe sequences for the BLAT alignment.
 
-For more information, see "Simulation of Heterogeneous Tumour Genomes with HeteroGenesis and In Silico Whole Exome Sequencing, Tanner G et al., 2018." (Manuscript submitted)
-Please cite this when using w-Wessim, along with the authors of Wessim and GemSIM:
+For more information see: https://doi.org/10.1093/bioinformatics/bty1063
+
+Please cite the following when using w-Wessim:
+
+Tanner G, Westhead DR, Droop A, Stead LF. Simulation of heterogeneous tumour genomes with HeteroGenesis and in silico whole exome sequencing. Bioinformatics. 2019 Jan 4;35(16):2850–2. 
+
+...along with the authors of Wessim and GemSIM:
 
 Kim S, Jeong K, Bafna V. Wessim: a whole-exome sequencing simulator based on in silico exome capture. Bioinformatics. 2013;29:1076–7.
 
