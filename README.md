@@ -14,6 +14,11 @@ Kim S, Jeong K, Bafna V. Wessim: a whole-exome sequencing simulator based on in 
 
 McElroy KE, Luciani F, Thomas T. GemSIM: general, error-model based simulator of next-generation sequencing data. BMC genomics. 2012;13(1):74.
 
+## Versions
+
+v2 - Improved resource management and speed. (25/06/2020)
+
+v1 - Initial commit. (09/08/2018)
 
 ## Requirements
 
@@ -22,12 +27,6 @@ w-Wessim requires Python2, with numpy and pysam (which requires htslib and samto
 Python 2.7.12
 
 numpy 1.12.0
-
-pysam 0.10.0
-
-samtools 1.3.1
-
-htslib 1.3.2
 
 w-Wessim can either be run with probe sequences from exon capture kits, or with real WES reads as probes. 
 
@@ -49,7 +48,7 @@ This is the genome that you intend to sequence.
 FASTA format. Must be indexed with faidx.
 
 * **Probe sequences:**
-These are the "probes" used in the BLAT alignment to define regions for w-Wessim to sequence. These can either be the sequences for exon capture kit hybridisation probes, or the sequences of real WES reads (recommended for more realistic read distributions from w-Wessim). Probe sequences for the Agilent SureSelect Human All Exon V4+UTRs kit (or any other kit for which probe sequences are avaialable) can be downloaded from https://earray.chem.agilent.com/suredesign/index.htm and converted to FASTA format with the Prep\_Probe2Fa.py script from the orginal Wessim tool (http://sak042.github.io/Wessim/). Real WES reads (from the NCBI Sequence Read Archive, accession no. SRR2103613, captured with the Agilent SureSelect Human All Exon V5+UTRs kit) that have been quality and adapter trimmed by cutadapt and filtered for a high BWA MEM mapping quality, are provided as sample ERR2752113 from the European Nucleotide Archive (http://ftp.sra.ebi.ac.uk/vol1/run/ERR275/ERR2752113/real_wes_reads_probes.fastq.gz). These will need to be converted from fastq to fasta format with:
+These are the "probes" used in the BLAT alignment to define regions for w-Wessim to sequence. These can either be the sequences for exon capture kit hybridisation probes, or the sequences of real WES reads (recommended for more realistic read distributions from w-Wessim). Probe names must be converted into integers prior to running the BLAT. Probe sequences for the Agilent SureSelect Human All Exon V4+UTRs kit (or any other kit for which probe sequences are avaialable) can be downloaded from https://earray.chem.agilent.com/suredesign/index.htm and converted to FASTA format with the Prep\_Probe2Fa.py script from the orginal Wessim tool (http://sak042.github.io/Wessim/). Real WES reads (from the NCBI Sequence Read Archive, accession no. SRR2103613, captured with the Agilent SureSelect Human All Exon V5+UTRs kit) that have been quality and adapter trimmed by cutadapt and filtered for a high BWA MEM mapping quality, are provided as sample ERR2752113 from the European Nucleotide Archive (http://ftp.sra.ebi.ac.uk/vol1/run/ERR275/ERR2752113/real_wes_reads_probes.fastq.gz). These will need to be converted from fastq to fasta format with:
 
 ```
 paste - - - - < file.fastq | cut -f 1,2 | sed 's/^@/>/' | tr "\t" "\n" > file.fa
@@ -87,7 +86,7 @@ chmod a+x ./fatotwobit
 
 ### Usage
 
-It's often helpful to split the genome FASTA file that you wish to sequence into sections to avoid errors that sometimes arrise with pblat when handling larger files - we find splitting a human genome into 4 files (each ~1.5GB) is sufficient. However, each run still takes a similar length of time regardless of how large the genome section is, so its best to not split the genome up too much. Splitting the probe sequences and running them in parallel on multiple nodes is also possible if wanting to shorten run time.
+It's often helpful to split the genome FASTA file that you wish to sequence into sections to avoid errors that sometimes arrise with pblat when handling larger files - we find splitting a human genome into 4 files (each ~1.5GB) is sufficient. However, each run still takes a similar length of time regardless of how large the genome section is, so its best to not split the genome up too much. Splitting the probe sequences and running them in parallel on multiple nodes is also possible if wanting to shorten run time. Probe names must be converted into integers prior to running the BLAT in order to work with w-Wessim.
 
 The genome (or sections) you want to sequence needs to be converted to 2bit format. This is done with:
 
@@ -113,7 +112,7 @@ To run w-Wessim:
 
 ```
 cd {w-Wessim_DIRECTORY}
-python2 w-wessim2.py -R {INPUT_GENOME} -P {PROBES_FILE} -B {BLAT_OUTPUT}.psl -n 10000000 -l d -M {ERROR_MODEL}.gzip -pz -o {OUTPUT_NAME} -t 1 -v -m 20 -f 170 -d 35
+python2 w-wessim.py -R {INPUT_GENOME} -P {PROBES_FILE} -B {BLAT_OUTPUT}.psl -n 10000000 -l d -M {ERROR_MODEL}.gzip -z -o {OUTPUT_NAME} -v -m 20 -f 170 -d 35
 ```
 ### Parameters
 
@@ -126,14 +125,12 @@ python2 w-wessim2.py -R {INPUT_GENOME} -P {PROBES_FILE} -B {BLAT_OUTPUT}.psl -n 
 |-o|Output file name - .fasta(.gz) will be attached to this.|Required
 |-n|Number of reads/pairs of reads.|Required
 |-l|Read length. 'd' may be given instead of an integer for read lengths to be taken from the distribution provided in the GemSIM error model.|Required
-|-p|Generate paired-end reads - must match the GemSIM error model.|[false]
 |-z|Compress output with gzip.|[false]
 |-f|Mean fragement size (when using paired-end sequencing).|200
 |-d|Standard deviation of fragment size.|50
 |-m|Minimum fragment lenngth. |read length + 20 
 |-w|Minimum required fraction of probe match to be hybridized.|50
 |-y|Penalty weight for indel in the hybridization.|2
-|-t|Number of threads.|1
 |-q|Quality score offset.|33
 
 
@@ -232,6 +229,6 @@ for clone in clone1 clone2 germline ; do cat prefix${clone}*.fasta > prefix${clo
 
 #w-Wessim:
 cd ../w-Wessim
-python2 w-wessim2.py -R ../test1/prefix${clone}.fasta -P real_wes_reads_probes.fa -B ${clone}.psl -n 100000 -l d -M lib/hs2000p.gzip -pz -o ../test1/w-wessimoutput -t 1 -v -m 20 -f 170 -d 35
+python2 w-wessim.py -R ../test1/prefix${clone}.fasta -P real_wes_reads_probes.fa -B ${clone}.psl -n 100000 -l d -M lib/hs2000p.gzip -pz -o ../test1/w-wessimoutput -t 1 -v -m 20 -f 170 -d 35
 
 ```
