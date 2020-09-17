@@ -7,7 +7,9 @@ w-Wessim is an adapted version of Wessim (Kim S. et al., 2013), an *in silico* w
 
 We also provide an improved protocol that more accurately models the read distributions seen in real WES data by using real WES read sequences instead of exon capture probe sequences for the BLAT alignment.
 
-For more information see: https://doi.org/10.1093/bioinformatics/bty1063
+NB. The Error model provided with w-Wessim (trained using GemSIM), has a higher than expected base quality score distribution, specifically for error bases. This may cause a high false positive rate during point variant calling, which users can overcome either by training their own error models with GemSIM, or by subsampling false positive calls to more realistic proportions. 
+
+For more information on w-Wessim see: https://doi.org/10.1093/bioinformatics/bty1063
 
 Please cite the following when using w-Wessim:
 
