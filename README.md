@@ -35,11 +35,11 @@ Python 2.7.12
 
 numpy 1.12.0
 
-w-Wessim can either be run with probe sequences from exon capture kits, or with real WES reads as probes. 
+w-Wessim can either be run with probe sequences from exon capture kits, or with real WES reads as probes. A BLAT alignment of either of these probe sets to the genome being sequenced is necessary prior to running w-Wessim.
 
-The first option requires relatively low computational requirements and can be done on a standard computer within a few hours.
+The first option with exon capture kit probes requires relatively low computational requirements and can be done on a standard computer within a few hours.
 
-The second option produces more realistic coverage across target and off target regions but requires a high performance computing system due to both time and memory requirements - around 9h/threads and 72GB RAM x threads to generate 1 × 10^7 pairs of reads. The large memory requirement results from the high number of real reads used as probes, which can be downsampled if needed. A BLAT alignment of the probes to the genome being sequenced is necessary prior to running w-Wessim. For the full set of 1x108 real read probes used in our example, this would take ~700h/threads. However, this can be ran across multiple nodes in separate runs by splitting the read number, probes or genome sequence.
+The second option with real reads as probes produces more realistic coverage across target and off target regions but requires a high performance computing system due to both time and memory requirements. With the full set of 1x10^8 real read probes used in the example in the paper, this would take ~700h/threads for the BLAT alignment (which can be ran across multiple nodes in separate runs by splitting the read number, probes or genome sequence) and require around 9h and 72GB RAM to generate 1 × 10^7 pairs of reads on a single thread by w-Wessim. It's likely that downsampling the real read probes by a factor of 4, to reduce memory and time requirements, would still allow for realistic distributions, though this should be visually assessed by the user.
 
 ## Installation
 ```bash
