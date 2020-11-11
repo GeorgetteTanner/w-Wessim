@@ -21,6 +21,8 @@ Kim S, Jeong K, Bafna V. Wessim: a whole-exome sequencing simulator based on in 
 
 McElroy KE, Luciani F, Thomas T. GemSIM: general, error-model based simulator of next-generation sequencing data. BMC genomics. 2012;13(1):74.
 
+For any issues in running w-wessim, please leave a comment on github or email medgnt@leeds.ac.uk.
+
 ## Versions
 
 v2 - Improved resource management and speed. (25/06/2020)
@@ -39,7 +41,7 @@ w-Wessim can either be run with probe sequences from exon capture kits, or with 
 
 The first option with exon capture kit probes requires relatively low computational requirements and can be done on a standard computer within a few hours.
 
-The second option with real reads as probes produces more realistic coverage across target and off target regions but requires a high performance computing system due to both time and memory requirements. With the full set of 1x10^8 real read probes used in the example in the paper, this would take ~700h/threads for the BLAT alignment (which can be ran across multiple nodes in separate runs by splitting the read number, probes or genome sequence) and require around 9h and 72GB RAM to generate 1 × 10^7 pairs of reads on a single thread by w-Wessim. It's likely that downsampling the real read probes by a factor of 4, to reduce memory and time requirements, would still allow for realistic distributions, though this should be visually assessed by the user.
+The second option with real WES reads as probes produces more realistic coverage across target and off target regions but requires a high performance computing system due to both time and memory requirements. The real read probes should be randomly downsampled, depending on the number of simulated reads needing to be generated; Using at least the same number of probes as the number of reads being simulated allows for the most realistic distribution overall, but requires high resources. Using fewer probe numbers (eg. ten times fewer probes than the number of reads needing to be generated) reduces resource requirements, but may result in clumping of the off-target reads, although it has less impact on on-target regions where there's a higher density of real WES probes. Using the full set of 1x10^8 real read probes used in the example in the paper, this requires 5GB RAM and ~200h for the BLAT alignment on a single thread (this can be multithreaded, or ran across multiple nodes in separate runs by splitting the read number, probes or genome sequence to shorten run time) and around 50GB RAM for w-Wessim, to sequence the hg38 human reference genome. Whereas, using 1x10^7 requires around 20h and 5GB RAM for the BLAT on a single thread, and 7GB RAM by w-Wessim. The time required for w-Wessim mostly depends on the number of reads being generated; 1x10^7 reads requires around 8h. Larger genomes (eg. when using diploid human genomes) will require higher resources.
 
 ## Installation
 ```bash
@@ -60,14 +62,23 @@ These are the "probes" used in the BLAT alignment to define regions for w-Wessim
 ```
 paste - - - - < file.fastq | cut -f 1,2 | sed 's/^@/>/' | tr "\t" "\n" > file.fa
 ```
+ These can be downsampled to the required number (eg. 10000000) with:
+
+```
+cat file.fa| paste - - > shuf -n 10000000 | sed 's/^.//' > shuf_file.fa
+sort -k1 -n shuf_file.fa > sort_file.fa 
+sed -e 's/^/>/' sort_file.fa | tr '\t' '\n' > downsampled_10m_file.fa
+```
+
+
 
 * **BLAT alignment of probe sequences:**
 See the section below on BLAT.
 
 * **GemSIM error model**
-This tells w-Wessim how to incorporate errors in to the reads. Users can generate their own error models using GemSIM or use an existing model. One is provided with w-Wessim ('lib/hs2000p.gzip') that has been trained on Illumina HiSeq 2000 WGS 101bp paired-end reads (from the NCBI Sequence Read Archive, accession no. ERR194146, and quality and adapter trimmed with cutadapt) from chromosome 1, with known variant sites ignored. Error models are specific to paired- or single-end read datasets and therefore the user must tell w-Wessim to generate paired end reads (with -p) if using a paired-end error model.
+This tells w-Wessim how to incorporate errors in to the reads. Users can generate their own error models using GemSIM or use an existing model. One is provided with w-Wessim ('lib/hs2000p.gzip') that has been trained on Illumina HiSeq 2000 WGS 101bp paired-end reads (from the NCBI Sequence Read Archive, accession no. ERR194146, and quality and adapter trimmed with cutadapt) from chromosome 1, with known variant sites ignored. 
 
-If using an error model, such as the one provided, that has been trained on cleaned data it is not recommended to clean the resulting reads from w-Wessim.
+If using an error model, such as the one provided, that has been trained on cleaned data it may not be appropriate to clean the resulting reads from w-Wessim.
 
 ## BLAT
 
@@ -93,9 +104,9 @@ chmod a+x ./fatotwobit
 
 ### Usage
 
-It's often helpful to split the genome FASTA file that you wish to sequence into sections to avoid errors that sometimes arrise with pblat when handling larger files - we find splitting a human genome into 4 files (each ~1.5GB) is sufficient. However, each run still takes a similar length of time regardless of how large the genome section is, so its best to not split the genome up too much. Splitting the probe sequences and running them in parallel on multiple nodes is also possible if wanting to shorten run time. Probe names must be converted into integers prior to running the BLAT in order to work with w-Wessim.
+Probe names must be converted into integers prior to running the BLAT in order to work with w-Wessim. This is already done for the available real WES read probes.
 
-The genome (or sections) you want to sequence needs to be converted to 2bit format. This is done with:
+The genome you want to sequence needs to be converted to 2bit format. This is done with:
 
 ```
 faToTwoBit genome.fasta genome.fasta.2bit
@@ -119,7 +130,7 @@ To run w-Wessim:
 
 ```
 cd {w-Wessim_DIRECTORY}
-python2 w-wessim.py -R {INPUT_GENOME} -P {PROBES_FILE} -B {BLAT_OUTPUT}.psl -n 10000000 -l d -M {ERROR_MODEL}.gzip -z -o {OUTPUT_NAME} -v -m 20 -f 170 -d 35
+python2 w-wessim.py -R {INPUT_GENOME} -P {PROBES_FILE} -B {BLAT_OUTPUT}.psl -n 10000000 -l d -M {ERROR_MODEL}.gzip -o {OUTPUT_NAME} -m 20 -f 170 -d 35
 ```
 ### Parameters
 
@@ -145,23 +156,34 @@ python2 w-wessim.py -R {INPUT_GENOME} -P {PROBES_FILE} -B {BLAT_OUTPUT}.psl -n 1
 ## Example
 
 
-This example demonstrates how to use w-Wessim with the real reads probe set to create the most realistic sequencing dataset. This is a very time and memory consuming process and not feasible without access to a high performance computing system. The option of using a subsampled probe set (with 1/1000th of the probes) is available if the user wishes to run the programs on a standard computer just for testing the code. The resulting sequencing data set from this will look very patchy and is not intended for use.
+This example demonstrates how to use w-Wessim with the real reads probe set to create the most realistic sequencing dataset. This is a very time and memory consuming process and may not be feasible without access to a high performance computing system. Instead, the option of using a subsampled probe set (with 1/1000th of the probes) is available if the user wishes to run the programs on a standard computer just for testing the code. The resulting sequencing data set from this will look very patchy and is not intended for use.
 Alternatively, the probe sequences from an exon capture kit can be used. This is much quicker and less memory intensive but results in a slightly less realistic distribution of reads. 
 
 Instructions for all three options are included below.
 
 
 ```bash
-#Download programs - (you may get a few warnings during pblat installation that can be ignored):
+####Download programs:
+
 git clone https://github.com/GeorgetteTanner/w-Wessim.git
-git clone https://github.com/icebert/pblat.git
+
 #(need to find the correct binary file for your operating system:)
 wget http://hgdownload.soe.ucsc.edu/admin/exe/macOSX.x86_64/faToTwoBit
 chmod a+x ./fatotwobit
 
+#1.
+git clone https://github.com/icebert/pblat.git
+cd pblat
+make
+cd ..
+#OR 2. (if conda is installed)
+conda install pblat
+
+####Download probes:
+
 #EITHER:
 
-#1. Download full set of probe sequences and convert from fastq to fasta:
+#1. Download full set of real WES reads probe sequences and convert from fastq to fasta:
 cd w-Wessim
 wget ftp://ftp.sra.ebi.ac.uk/vol1/ERA157/ERA1574375/fastq/real_wes_reads_probes.fastq.gz
 gunzip real_wes_reads_probes.fastq.gz
@@ -169,7 +191,7 @@ paste - - - - < real_wes_reads_probes.fastq | cut -f 1,2 | sed 's/^@/>/' | tr "\
 
 #OR
 
-#2.Download subsampled probe sequences:
+#2.Download 1/1000th of real WES reads probe sequences:
 cd w-Wessim
 wget https://github.com/GeorgetteTanner/data/raw/master/real_wes_reads_probes_subsampled.fa.gz
 gunzip real_wes_reads_probes_subsampled.fa.gz
@@ -185,57 +207,22 @@ mv real_wes_reads_probes_subsampled.fa real_wes_reads_probes.fa
 #code not shown here for this#
 
 
-#Download a reference genome or any other genome you wish to sequence:
+####Download a reference genome or any other genome you wish to sequence:
 mkdir ../test1
 cd ../test1
 wget ftp://gsapubftp-anonymous@ftp.broadinstitute.org/bundle/hg38/Homo_sapiens_assembly38.fasta.gz
 wget ftp://gsapubftp-anonymous@ftp.broadinstitute.org/bundle/hg38/Homo_sapiens_assembly38.fasta.fai
 gunzip Homo_sapiens_assembly38.fasta.gz
 
-#Split genome into chromosomes (ignoring unplaced scafolds):
-for chr in $(seq 1 22) X Y; do samtools faidx Homo_sapiens_assembly38.fasta ${chr} > Homo_sapiens_assembly38_${chr}.fasta ; done
+###BLAT
+#(Older versions of pblat had issues with large genomes. If this happens, you can split the genome
+#and run pblat on each section separately. This doesn't appear to be a problem with newer pblat versions.)
 
-#Combine fasta files. These need to be grouped into files of no more 
-#than around 2GB to avoid errors with pblat - we recommend grouping 
-#into 2 for haploid genomes or 4 for diploid genomes. Each run of
-#pblat takes a similar length of time regardless of #genome length so 
-#its best to group into as few files as possible.: 
+faToTwoBit Homo_sapiens_assembly38.fasta Homo_sapiens_assembly38.fasta.2bit
+pblat Homo_sapiens_assembly38.fasta.2bit ../w-Wessim/real_wes_reads_probes.fa blatoutput_Homo_sapiens_assembly38.psl -minScore=95 -minIdentity=95 -threads=8
 
-#EITHER:
-
-#1. For haploid:
-cat Homo_sapiens_assembly38_chr1*fasta > Homo_sapiens_assembly38_1.fasta
-cat Homo_sapiens_assembly38_chr[^1]*fasta > Homo_sapiens_assembly38_2.fasta
-
-#OR
-
-#2. For diploid (which requires further splitting to reduce file sizes):
-cat Homo_sapiens_assembly38_chr1*A*fasta > Homo_sapiens_assembly38_1.fasta
-cat Homo_sapiens_assembly38_chr1*B*fasta > Homo_sapiens_assembly38_2.fasta
-cat Homo_sapiens_assembly38_chr[^1]*A*fasta > Homo_sapiens_assembly38_3.fasta
-cat Homo_sapiens_assembly38_chr[^1]*B*fasta > Homo_sapiens_assembly38_4.fasta 
-
-#Convert each chromosome fasta to 2bit:
-for f in Homo_sapiens_assembly38_*.fasta ; do faToTwoBit $f ${f}.2bit ; done
-
-#pblat (change probe directory and name if required): 
-for f in Homo_sapiens_assembly38_*.fasta.2bit ; do ../pblat/pblat $f ../w-Wessim/real_wes_reads_probes.fa blatoutput_$(basename $f .fasta.2bit).psl -minScore=95 -minIdentity=95 -threads=8; done
-
-#Combine .psl files:
-#Save the header:
-head -n 5 $(ls prefix*.fasta | head -1 ) > pslheader.txt
-#Remove the headers:
-for f in *.psl ; do tail -n+6 $f > noheader_$f ; done 
-#Combine noheader*.psl files and sort combined file on column 10: 
-for clone in clone1 clone2 germline ; do cat noheader_${clone}*.psl | sort -k 10 -n > sorted_combined_noheader_${clone}.psl ; done
-#Add the header:
-cat pslheader.txt sorted_combined_noheader_${clone}.psl > ${clone}.psl
-
-#Combine fasta files into full genomes:
-for clone in clone1 clone2 germline ; do cat prefix${clone}*.fasta > prefix${clone}.fasta ; done
-
-#w-Wessim:
+###w-Wessim:
 cd ../w-Wessim
-python2 w-wessim.py -R ../test1/prefix${clone}.fasta -P real_wes_reads_probes.fa -B ${clone}.psl -n 100000 -l d -M lib/hs2000p.gzip -pz -o ../test1/w-wessimoutput -t 1 -v -m 20 -f 170 -d 35
+python2 w-wessim.py -R ../test1/Homo_sapiens_assembly38.fasta -P real_wes_reads_probes.fa -B ../test1/blatoutput_Homo_sapiens_assembly38.psl -n 100000 -l d -M lib/hs2000p.gzip -o ../test1/w-wessimoutput -m 20 -f 170 -d 35
 
 ```
