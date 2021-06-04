@@ -149,8 +149,8 @@ python2 w-wessim.py -R {INPUT_GENOME} -P {PROBES_FILE} -B {BLAT_OUTPUT}.psl -n 1
 |-f|Mean fragement size (when using paired-end sequencing).|200
 |-d|Standard deviation of fragment size.|50
 |-m|Minimum fragment lenngth. |read length + 20 
-|-w|Minimum required fraction of probe match to be hybridized.|50
-|-y|Penalty weight for indel in the hybridization.|2
+|-y|Minimum required fraction of probe match to be hybridized.|50
+|-w|Penalty weight for indel in the hybridization.|2
 |-q|Quality score offset.|33
 
 
